@@ -80,7 +80,7 @@
 import axios from "axios";
 import Vue from "vue";
 
-export default {
+export default Vue.extend({
   data() {
     return {
       show: false,
@@ -94,53 +94,54 @@ export default {
   },
 
   mounted() {
-    const that = this;
+    this.getAccount();
+    this.getTransactions();
+  },
 
-    axios
-      .get(`http://localhost:8080/api/accounts/${this.$route.params.id}`)
+  methods: {
+    getAccount() {
+      var that = this;
+      axios
+      .get('http://localhost:8080/api/accounts/' + that.$route.params.id)
       .then(function(response) {
-        if (!response.data.length) {
-          window.location = "/";
+        if (! response.data) {
+          that.$router.push("/");
         } else {
-          that.account = response.data[0];
+          that.account = response.data;
 
           if (that.account && that.transactions) {
             that.loading = false;
           }
         }
       });
+    },
+    getTransactions() {
+      var that = this;
+      axios
+        .get('http://localhost:8080/api/accounts/' + that.$route.params.id + '/transactions')
+        .then(function(response) {
+          that.transactions = response.data;
 
-    axios
-      .get(
-        `http://localhost:8080/api/accounts/${
-          that.$route.params.id
-        }/transactions`
-      )
-      .then(function(response) {
-        that["transactions"] = response.data;
+          var transactions = [];
+          for (let i = 0; i < that.transactions.length; i++) {
+            that.transactions[i].amount =
+              (that.account.currency === "usd" ? "$" : "€") +
+              that.transactions[i].amount;
 
-        var transactions = [];
-        for (let i = 0; i < that.transactions.length; i++) {
-          that.transactions[i].amount =
-            (that.account.currency === "usd" ? "$" : "€") +
-            that.transactions[i].amount;
+            if (that.account.id != that.transactions[i].to) {
+              that.transactions[i].amount = "-" + that.transactions[i].amount;
+            }
 
-          if (that.account.id != that.transactions[i].to) {
-            that.transactions[i].amount = "-" + that.transactions[i].amount;
+            transactions.push(that.transactions[i]);
           }
 
-          transactions.push(that.transactions[i]);
-        }
+          that.transactions = transactions;
 
-        that.transactions = transactions;
-
-        if (that.account && that.transactions) {
-          that.loading = false;
-        }
-      });
-  },
-
-  methods: {
+          if (that.account && that.transactions) {
+            that.loading = false;
+          }
+        });
+    },
     onSubmit(evt) {
       var that = this;
 
@@ -162,10 +163,10 @@ export default {
         axios
           .get(`http://localhost:8080/api/accounts/${this.$route.params.id}`)
           .then(function(response) {
-            if (!response.data.length) {
+            if (!response.data) {
               window.location = "/";
             } else {
-              that.account = response.data[0];
+              that.account = response.data;
             }
           });
 
@@ -176,7 +177,7 @@ export default {
             }/transactions`
           )
           .then(function(response) {
-            that["transactions"] = response.data;
+            that.transactions = response.data;
 
             var transactions = [];
             for (let i = 0; i < that.transactions.length; i++) {
@@ -196,5 +197,5 @@ export default {
       }, 200);
     }
   }
-};
+});
 </script>
