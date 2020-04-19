@@ -51,9 +51,18 @@ class AccountController extends Controller
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
+        if ($account->id == $request->to) {
+            return response()->json(['message' => 'The destination account can not be the source account'], 422);
+        }
         if ($account->balance - $request->amount >= 0) {
             try {
                 $toAccount = Account::findOrFail($request->to);
+                if ($toAccount->currency != $account->currency) {
+                    return response()->json(
+                        ['message' => 'The destination account does not had the same currency of your account'],
+                        409
+                    );
+                }
                 $toAccount->balance += $request->amount;
                 $account->balance -= $request->amount;
                 $toAccount->save();
@@ -64,12 +73,18 @@ class AccountController extends Controller
                 $transaction->details = $request->details;
                 $transaction->amount = $request->amount;
                 $transaction->save();
-                return response()->json('Success');
+                return response()->json(['message' => 'Success'], 200);
             } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-                return response()->json('The destination account does not exist', 409);
+                return response()->json(
+                    ['message' => 'The destination account does not exist'],
+                    409
+                );
             }
         } else {
-            return response()->json('The amount to transfer exceeds your balance', 422);
+            return response()->json(
+                ['message' => 'The amount to transfer exceeds your balance'],
+                409
+            );
         }
 
     }

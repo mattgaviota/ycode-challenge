@@ -12,13 +12,15 @@ class AccountsTableSeeder extends Seeder
     public function run()
     {
         DB::table('accounts')->insert([
+            'balance' => 15000,
+            'currency' => 'USD',
             'name' => 'John',
-            'balance' => 15000
         ]);
 
         DB::table('accounts')->insert([
+            'balance' => 100000,
+            'currency' => 'USD',
             'name' => 'Peter',
-            'balance' => 100000
         ]);
     }
 }

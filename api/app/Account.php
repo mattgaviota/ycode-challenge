@@ -12,7 +12,7 @@ class Account extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'balance',
+        'name', 'balance', 'currency'
     ];
 
     public $timestamps = false;
@@ -38,6 +38,6 @@ class Account extends Model
      */
     protected function transactions()
     {
-        return $this->madeTransactions()->union($this->receivedTransactions());
+        return $this->madeTransactions()->union($this->receivedTransactions())->orderBy('id', 'desc');
     }
 }
