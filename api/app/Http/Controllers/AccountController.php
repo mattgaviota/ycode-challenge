@@ -73,7 +73,7 @@ class AccountController extends Controller
                 $transaction->details = $request->details;
                 $transaction->amount = $request->amount;
                 $transaction->save();
-                return response()->json(['message' => 'Success'], 200);
+                return response()->json(['message' => 'Success'], 201);
             } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
                 return response()->json(
                     ['message' => 'The destination account does not exist'],
