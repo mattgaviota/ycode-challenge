@@ -15,7 +15,6 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('accounts/{account}', 'AccountController@show');
-
+Route::post('accounts', 'AccountController@create');
 Route::get('accounts/{account}/transactions', 'AccountController@getTransactions');
-
 Route::post('accounts/{account}/transactions', 'AccountController@makeTransaction');

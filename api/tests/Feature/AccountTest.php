@@ -68,6 +68,20 @@ class AccountTest extends TestCase
     }
 
     /**
+     * Create Account test
+     *
+     * @return void
+     */
+    public function testCreateAccount()
+    {
+        $response = $this->postJson('/api/accounts', [
+            'name' => 'Test',
+            'currency' => 'USD'
+        ]);
+        $response->assertStatus(201);
+    }
+
+    /**
      * Make a transaction
      *
      * @return void
@@ -83,7 +97,7 @@ class AccountTest extends TestCase
         $response
             ->assertStatus(201)
             ->assertJson([
-                "message" => 'Success'
+                "message" => 'Transaction was successful'
             ])
         ;
         // Check the new balance of the account 1 and 2
@@ -137,6 +151,24 @@ class AccountTest extends TestCase
         $response
             ->assertStatus(404)
             ->assertJson(["message" => "Not Found!"])
+        ;
+    }
+
+    /**
+     * Create Wrong Account test
+     *
+     * @return void
+     */
+    public function testCreateWrongAccount()
+    {
+        $response = $this->postJson('/api/accounts', [
+            'name' => 'Test',
+            'currency' => 'US'
+        ]);
+        $response->assertStatus(422)
+            ->assertJson([
+                "currency" => ['The selected currency is invalid.']
+            ])
         ;
     }
 

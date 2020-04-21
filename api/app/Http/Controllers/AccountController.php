@@ -11,6 +11,41 @@ use Illuminate\Support\Facades\Validator;
 class AccountController extends Controller
 {
     /**
+     * Create an Account
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function create(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|min:3',
+            'currency' => 'required|in:USD,EUR',
+        ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+        try {
+            $account = new Account();
+            $account->name = $request->name;
+            $account->balance = 0;
+            $account->currency = $request->currency;
+            $account->save();
+            return response()->json([
+                    'id' => $account->id,
+                    'message' => "Welcome {$account->name}!. Your Account ID is {$account->id}",
+                ],
+                201
+            );
+        } catch (\Exception $e) {
+            return response()->json(
+                ['message' => 'The account could not be created'],
+                409
+            );
+        }
+    }
+
+    /**
      * Display the account
      *
      * @param  \App\Account  $account
@@ -73,7 +108,7 @@ class AccountController extends Controller
                 $transaction->details = $request->details;
                 $transaction->amount = $request->amount;
                 $transaction->save();
-                return response()->json(['message' => 'Success'], 201);
+                return response()->json(['message' => 'Transaction was successful'], 201);
             } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
                 return response()->json(
                     ['message' => 'The destination account does not exist'],
@@ -86,6 +121,5 @@ class AccountController extends Controller
                 409
             );
         }
-
     }
 }
