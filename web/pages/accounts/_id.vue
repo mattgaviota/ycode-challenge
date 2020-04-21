@@ -6,15 +6,16 @@
       <b-card :header="'Welcome, ' + account.name" class="mt-3">
         <b-card-text>
           <div>
-            Account: <code>{{ account.id }}</code>
+            Account: <code id="account">{{ account.id }}</code>
           </div>
           <div>
             Balance:
-            <code>{{ account.currency === "USD" ? "$" : "€"}}{{ account.balance }}</code>
+            <code id="balance">{{ account.currency === "USD" ? "$" : "€"}}{{ account.balance }}</code>
           </div>
         </b-card-text>
         <b-button size="sm" variant="success" @click="show = !show">New payment</b-button>
         <b-button
+          id="logout"
           class="float-right"
           variant="danger"
           size="sm"
@@ -24,7 +25,7 @@
       </b-card>
 
       <b-card class="mt-3" header="New Payment" v-show="show">
-        <b-form @submit="onSubmit">
+        <b-form id="newPayment" @submit="onSubmit">
           <b-form-group id="input-group-1" label="To:" label-for="input-1">
             <b-form-input
               id="input-1"
