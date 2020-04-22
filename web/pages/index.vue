@@ -61,7 +61,7 @@ interface Response {
 export default Vue.extend({
   data() {
     return {
-      accountID: '',
+      accountID: null,
       newAccount: false,
       accessAccount: false,
       accountName: '',
@@ -77,7 +77,7 @@ export default Vue.extend({
     async createAccount(): Promise<Response> {
       try {
         const accountData = await this.$axios.$post<Response>(
-          'http://localhost:8080/api/accounts',
+          process.env.apiUrl + '/api/accounts',
           { name: this.accountName, currency: this.accountCurrency }
         )
         this.$bvToast.toast(accountData.message, {

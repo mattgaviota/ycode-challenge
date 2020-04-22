@@ -11,24 +11,13 @@
           </div>
           <div>
             Balance:
-            <code id="balance"
-              >{{ account.currency === 'USD' ? '$' : '€'
-              }}{{ account.balance }}</code
-            >
+            <code
+              id="balance"
+            >{{ account.currency === 'USD' ? '$' : '€'}}{{ account.balance }}</code>
           </div>
         </b-card-text>
-        <b-button size="sm" variant="success" @click="show = !show"
-          >New payment</b-button
-        >
-        <b-button
-          id="logout"
-          class="float-right"
-          variant="danger"
-          size="sm"
-          nuxt-link
-          to="/"
-          >Logout</b-button
-        >
+        <b-button size="sm" variant="success" @click="show = !show">New payment</b-button>
+        <b-button id="logout" class="float-right" variant="danger" size="sm" nuxt-link to="/">Logout</b-button>
       </b-card>
 
       <b-card class="mt-3" header="New Payment" v-show="show">
@@ -103,7 +92,7 @@ interface Response {
 }
 
 export default Vue.extend({
-  async asyncData({ app, $axios, params, redirect }) {
+  async asyncData({ $axios, app, env, params, redirect }) {
     let accountData: AccountResponse = {
       id: 0,
       name: '',
@@ -112,10 +101,10 @@ export default Vue.extend({
     let transactionsData: TransactionResponse = { response: [] }
     try {
       accountData = await $axios.$get<AccountResponse>(
-        'http://localhost:8080/api/accounts/' + params.id
+        env.apiUrl + '/api/accounts/' + params.id
       )
       transactionsData = await $axios.$get<TransactionResponse>(
-        'http://localhost:8080/api/accounts/' + params.id + '/transactions'
+        env.apiUrl + '/api/accounts/' + params.id + '/transactions'
       )
     } catch (error) {
       app.$toast.error('Account Not Found', {
@@ -146,18 +135,20 @@ export default Vue.extend({
       evt.preventDefault()
       try {
         const transaction: Response | null = await this.$axios.$post<Response>(
-          'http://localhost:8080/api/accounts/' +
+          process.env.apiUrl +
+            '/api/accounts/' +
             this.account.id +
             '/transactions',
           this.payment
         )
         const accountData: AccountResponse | null = await this.$axios.$get<
           AccountResponse
-        >('http://localhost:8080/api/accounts/' + this.account.id)
+        >(process.env.apiUrl + '/api/accounts/' + this.account.id)
         const transactionsData: TransactionResponse | null = await this.$axios.$get<
           TransactionResponse
         >(
-          'http://localhost:8080/api/accounts/' +
+          process.env.apiUrl +
+            '/api/accounts/' +
             this.account.id +
             '/transactions'
         )

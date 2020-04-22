@@ -28,7 +28,7 @@ context('Accounts', () => {
     cy.get('#login').click()
     // Get balance
     cy.get('#balance').then(($balance) => {
-      const oldBalance = parseFloat($balance.text().substring(1))
+      const oldBalance = parseFloat($balance.text().trim().substring(1))
       expect(oldBalance).be.gt(500)
       // Make a transaction
       cy.get('.btn-success').click()
@@ -36,7 +36,7 @@ context('Accounts', () => {
       cy.get('#input-2').type('500')
       cy.get('#input-3').type('Sample transaction of $500 to account 2')
       cy.get('#newPayment').submit(() => {
-        const newBalance = parseFloat($balance.text().substring(1))
+        const newBalance = parseFloat($balance.text().trim().substring(1))
         expect(oldBalance).to.eq(newBalance + 500)
       })
     })
