@@ -13,8 +13,16 @@ class AccountController extends Controller
     /**
      * Create an Account
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @bodyParam name string required The name of the owner. Example: Matt
+     * @bodyParam currency string required The ID of the account. Example: USD
+     * @response 201{
+     *  "id": 4,
+     *  "message": "Welcome Matt!. Your Account ID is 4"
+     * }
+     * @response 422 {
+     *  "name": "The name must be at least 3 characters.",
+     *  "currency": "The selected currency is invalid."
+     * }
      */
     public function create(Request $request)
     {
@@ -48,8 +56,16 @@ class AccountController extends Controller
     /**
      * Display the account
      *
-     * @param  \App\Account  $account
-     * @return \Illuminate\Http\Response
+     * @urlParam id required The id of the account. Example: 1
+     * @response {
+     *  "id": 4,
+     *  "name": "Matt",
+     *  "balance": 14000,
+     *  "currency": "USD"
+     * }
+     * @response 404{
+     *  "message": "Not Found!"
+     * }
      */
     public function show(Account $account)
     {
@@ -59,8 +75,33 @@ class AccountController extends Controller
     /**
      * Display all the transactions
      *
-     * @param  \App\Account  $account
-     * @return \Illuminate\Http\Response
+     * @urlParam id required The id of the account. Example: 1
+     * @response [
+     *  {
+     *      "id": 3,
+     *      "from": 2,
+     *      "to": 1,
+     *      "details": "sample transaction 3",
+     *      "amount": "15"
+     *  },
+     *  {
+     *      "id": 2,
+     *      "from": 1,
+     *      "to": 2,
+     *      "details": "sample transaction 2",
+     *      "amount": "24"
+     *  },
+     *  {
+     *      "id": 1,
+     *      "from": 1,
+     *      "to": 2,
+     *      "details": "sample transaction",
+     *      "amount": "14"
+     *  }
+     *  ]
+     * @response 404{
+     *  "message": "Not Found!"
+     * }
      */
     public function getTransactions(Account $account)
     {
@@ -70,8 +111,32 @@ class AccountController extends Controller
     /**
      * Make a transactions
      *
-     * @param  \App\Account  $account
-     * @return \Illuminate\Http\Response
+     * @urlParam id required The id of the account. Example: 1
+     * @bodyParam to number required The id of the destination account. Example: 2
+     * @bodyParam amount number required The amount to be transfered. Example: 500
+     * @bodyParam details string required The detail of the transactions. Example: Sample transactions of $500
+     * @response 201{
+     *  "message": "Transaction was successful"
+     * }
+     * @response 422{
+     *    "to": [
+     *      "The to field is required."
+     *    ],
+     *    "amount": [
+     *      "The amount field is required."
+     *    ]
+     *  }
+     * @response 422{
+     *    "to": [
+     *      "The destination account does not exists"
+     *    ]
+     *  }
+     * @response 409 {
+     *  "message": "The amount to transfer exceeds your balance"
+     * }
+     * @response 409 {
+     *   "message": "The destination account does not had the same currency of your account"
+     * }
      */
     public function makeTransaction(Request $request, Account $account)
     {

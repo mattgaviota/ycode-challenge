@@ -76,14 +76,111 @@ fetch(url, {
 <p>Example response (200):</p>
 </blockquote>
 <pre><code class="language-json">{
-    "id": 1,
-    "currency": "USD",
-    "balance": "15000",
-    "name": "John"
+    "id": 4,
+    "name": "Matt",
+    "balance": 14000,
+    "currency": "USD"
+}</code></pre>
+<blockquote>
+<p>Example response (404):</p>
+</blockquote>
+<pre><code class="language-json">{
+    "message": "Not Found!"
 }</code></pre>
 <h3>HTTP Request</h3>
 <p><code>GET api/accounts/{account}</code></p>
+<h4>URL Parameters</h4>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Status</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td>required</td>
+<td>The id of the account.</td>
+</tr>
+</tbody>
+</table>
 <!-- END_9b44b4cf3baf08caef7a0b0feb798b91 -->
+<!-- START_2e3bad94a1c50a2d03acc0ec870caefa -->
+<h2>Create an Account</h2>
+<blockquote>
+<p>Example request:</p>
+</blockquote>
+<pre><code class="language-bash">curl -X POST \
+    "http://localhost:8080/api/accounts" \
+    -H "Content-Type: application/json" \
+    -H "Accept: application/json" \
+    -d '{"name":"Matt","currency":"USD"}'
+</code></pre>
+<pre><code class="language-javascript">const url = new URL(
+    "http://localhost:8080/api/accounts"
+);
+
+let headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+let body = {
+    "name": "Matt",
+    "currency": "USD"
+}
+
+fetch(url, {
+    method: "POST",
+    headers: headers,
+    body: body
+})
+    .then(response =&gt; response.json())
+    .then(json =&gt; console.log(json));</code></pre>
+<blockquote>
+<p>Example response (201):</p>
+</blockquote>
+<pre><code class="language-json">{
+    "id": 4,
+    "message": "Welcome Matt!. Your Account ID is 4"
+}</code></pre>
+<blockquote>
+<p>Example response (422):</p>
+</blockquote>
+<pre><code class="language-json">{
+    "name": "The name must be at least 3 characters.",
+    "currency": "The selected currency is invalid."
+}</code></pre>
+<h3>HTTP Request</h3>
+<p><code>POST api/accounts</code></p>
+<h4>Body Parameters</h4>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Status</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>name</code></td>
+<td>string</td>
+<td>required</td>
+<td>The name of the owner.</td>
+</tr>
+<tr>
+<td><code>currency</code></td>
+<td>string</td>
+<td>required</td>
+<td>The ID of the account.</td>
+</tr>
+</tbody>
+</table>
+<!-- END_2e3bad94a1c50a2d03acc0ec870caefa -->
 <!-- START_e9485e6bd8fbd6ab9d07f08f48a28ac4 -->
 <h2>Display all the transactions</h2>
 <blockquote>
@@ -134,8 +231,31 @@ fetch(url, {
         "amount": "14"
     }
 ]</code></pre>
+<blockquote>
+<p>Example response (404):</p>
+</blockquote>
+<pre><code class="language-json">{
+    "message": "Not Found!"
+}</code></pre>
 <h3>HTTP Request</h3>
 <p><code>GET api/accounts/{account}/transactions</code></p>
+<h4>URL Parameters</h4>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Status</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td>required</td>
+<td>The id of the account.</td>
+</tr>
+</tbody>
+</table>
 <!-- END_e9485e6bd8fbd6ab9d07f08f48a28ac4 -->
 <!-- START_f264c3bf65231a66c5de7ac1205f1c04 -->
 <h2>Make a transactions</h2>
@@ -145,7 +265,9 @@ fetch(url, {
 <pre><code class="language-bash">curl -X POST \
     "http://localhost:8080/api/accounts/1/transactions" \
     -H "Content-Type: application/json" \
-    -H "Accept: application/json"</code></pre>
+    -H "Accept: application/json" \
+    -d '{"to":2,"amount":500,"details":"Sample transactions of $500"}'
+</code></pre>
 <pre><code class="language-javascript">const url = new URL(
     "http://localhost:8080/api/accounts/1/transactions"
 );
@@ -155,14 +277,106 @@ let headers = {
     "Accept": "application/json",
 };
 
+let body = {
+    "to": 2,
+    "amount": 500,
+    "details": "Sample transactions of $500"
+}
+
 fetch(url, {
     method: "POST",
     headers: headers,
+    body: body
 })
     .then(response =&gt; response.json())
     .then(json =&gt; console.log(json));</code></pre>
+<blockquote>
+<p>Example response (201):</p>
+</blockquote>
+<pre><code class="language-json">{
+    "message": "Transaction was successful"
+}</code></pre>
+<blockquote>
+<p>Example response (422):</p>
+</blockquote>
+<pre><code class="language-json">{
+    "to": [
+        "The to field is required."
+    ],
+    "amount": [
+        "The amount field is required."
+    ]
+}</code></pre>
+<blockquote>
+<p>Example response (422):</p>
+</blockquote>
+<pre><code class="language-json">{
+    "to": [
+        "The destination account does not exists"
+    ]
+}</code></pre>
+<blockquote>
+<p>Example response (409):</p>
+</blockquote>
+<pre><code class="language-json">{
+    "message": "The amount to transfer exceeds your balance"
+}</code></pre>
+<blockquote>
+<p>Example response (409):</p>
+</blockquote>
+<pre><code class="language-json">{
+    "message": "The destination account does not had the same currency of your account"
+}</code></pre>
 <h3>HTTP Request</h3>
 <p><code>POST api/accounts/{account}/transactions</code></p>
+<h4>URL Parameters</h4>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Status</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td>required</td>
+<td>The id of the account.</td>
+</tr>
+</tbody>
+</table>
+<h4>Body Parameters</h4>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Status</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>to</code></td>
+<td>number</td>
+<td>required</td>
+<td>The id of the destination account.</td>
+</tr>
+<tr>
+<td><code>amount</code></td>
+<td>number</td>
+<td>required</td>
+<td>The amount to be transfered.</td>
+</tr>
+<tr>
+<td><code>details</code></td>
+<td>string</td>
+<td>required</td>
+<td>The detail of the transactions.</td>
+</tr>
+</tbody>
+</table>
 <!-- END_f264c3bf65231a66c5de7ac1205f1c04 -->
       </div>
       <div class="dark-box">
